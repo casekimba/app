@@ -1,122 +1,45 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#07101b">
-  <title>Мій день</title>
-  <style>
-    :root{
-      --bg:#07101b; --ink:#08111d; --white:#f8fbff;
-      --lime:#c8ff22; --pink:#f5b8d5; --blue:#328ce8; --mint:#a8e9d1;
-      --line:rgba(255,255,255,.14); --muted:#aeb8c4;
-    }
-    *{box-sizing:border-box}
-    html{background:var(--bg)}
-    body{margin:0;background:var(--bg);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
-    button,input{font:inherit}
-    .phone{width:min(100%,430px);min-height:100vh;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom));overflow:hidden}
-    .top{display:flex;align-items:center;justify-content:space-between;margin:2px 2px 16px;color:#fff}
-    .time{font-size:15px;font-weight:650}
-    .icons{display:flex;gap:10px;align-items:center;font-size:17px}
-    .hero{position:relative;background:var(--lime);color:var(--ink);border-radius:30px;padding:22px 20px 20px;margin-bottom:14px;overflow:hidden}
-    .hero h1{font-size:27px;line-height:1.05;margin:0 70px 7px 0;letter-spacing:-.8px}
-    .hero p{margin:0;font-size:14px;line-height:1.25;max-width:280px}
-    .bell{position:absolute;right:72px;top:22px;font-size:23px}.avatar{position:absolute;right:18px;top:15px;width:44px;height:44px;border-radius:50%;background:#0b1725;color:#fff;display:grid;place-items:center;font-size:19px}
-    .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
-    .card{position:relative;border-radius:27px;color:var(--ink);padding:18px 16px 17px;min-height:148px;overflow:visible}
-    .card h2{font-size:17px;margin:0 0 8px;font-weight:650}.big{font-size:34px;font-weight:760;letter-spacing:-1.5px}.label{font-size:13px;margin-top:3px}.bar{height:7px;border-radius:99px;background:rgba(8,17,29,.12);margin-top:16px;overflow:hidden}.bar i{display:block;height:100%;border-radius:99px;background:var(--ink)}
-    .pink{background:var(--pink)}.mint{background:var(--mint)}.blue{background:var(--blue);color:#fff}.lime{background:var(--lime)}
-    .calendar-dot{position:absolute;right:14px;top:14px;width:38px;height:38px;border:1.5px solid rgba(8,17,29,.25);border-radius:50%;display:grid;place-items:center;font-size:17px}
-
-    /* Puzzle-style connectors inspired by the supplied reference. */
-    .puzzle-bottom::after,.puzzle-top::before{content:"";position:absolute;width:32px;height:18px;z-index:3;background:inherit;border-radius:0 0 10px 10px;left:calc(50% - 16px)}
-    .puzzle-bottom::after{bottom:-13px}.puzzle-top::before{top:-13px;border-radius:10px 10px 0 0}
-    .puzzle-right::after{content:"";position:absolute;width:18px;height:32px;right:-13px;top:calc(50% - 16px);background:inherit;border-radius:0 10px 10px 0;z-index:3}
-
-    .today{position:relative;background:var(--blue);border-radius:29px;padding:20px;margin:0 0 14px;overflow:visible;color:#fff;min-height:155px}
-    .today-title{font-size:16px;margin-bottom:5px}.today-count{font-size:48px;font-weight:760;letter-spacing:-2px;line-height:1}.today-label{font-size:16px;font-weight:600;margin-top:4px}
-    .ring{position:absolute;right:22px;top:23px;width:86px;height:86px;border-radius:50%;background:conic-gradient(#fff var(--p),rgba(4,22,48,.35) 0);display:grid;place-items:center}.ring::after{content:"";width:64px;height:64px;border-radius:50%;background:#07101b}.ring span{position:absolute;font-size:17px;font-weight:700}
-    .selected-date{margin-top:18px;background:#07101b;border-radius:18px;padding:11px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px}.selected-date small{display:block;color:#8f9bab;font-size:11px;margin-bottom:2px}.selected-date strong{font-size:14px}.date-btn{border:1px solid #3aa1ff;color:#55b0ff;background:transparent;border-radius:999px;padding:8px 12px;font-size:12px;white-space:nowrap;cursor:pointer}
-    .date-picker{display:none;margin-top:9px;background:#07101b;border:1px solid var(--line);border-radius:16px;padding:9px}.date-picker.show{display:block}.date-picker input{width:100%;background:#101d2c;border:1px solid #26384b;color:#fff;border-radius:11px;padding:10px}
-
-    .task{position:relative;border-radius:28px;padding:17px 15px;margin:0 0 14px;color:var(--ink);display:flex;align-items:center;gap:13px;min-height:106px;cursor:pointer;transition:transform .15s,filter .2s}.task:active{transform:scale(.985)}
-    .task:nth-of-type(1){background:var(--lime)}.task:nth-of-type(2){background:var(--pink)}
-    .task-icon{width:57px;height:57px;border-radius:17px;background:rgba(8,17,29,.08);display:grid;place-items:center;font-size:28px;flex:none}.task-info{flex:1;min-width:0}.task-title{font-size:19px;font-weight:750;margin-bottom:6px}.pill{display:inline-block;padding:4px 10px;border-radius:999px;background:rgba(8,17,29,.08);font-size:11px;font-weight:650;margin-bottom:5px}.task-sub{font-size:12px}.check{width:43px;height:43px;border-radius:50%;border:1.8px solid var(--ink);display:grid;place-items:center;font-size:22px;flex:none;transition:.2s}.task.done .check{background:var(--ink);color:var(--lime)}.task.done{filter:saturate(.85)}
-    .backdate{position:relative;background:#0d1825;border:1px solid #233345;border-radius:27px;padding:16px;margin-top:2px;margin-bottom:14px;display:flex;align-items:center;gap:13px}.back-icon{width:48px;height:48px;border-radius:15px;background:#101f31;display:grid;place-items:center;font-size:23px;color:#45aaff;flex:none}.backdate h3{margin:0 0 4px;font-size:15px}.backdate p{margin:0;color:#9ca8b7;font-size:12px;line-height:1.35}.back-btn{margin-left:auto;background:transparent;color:#43a8ff;border:1px solid #238ee8;border-radius:999px;padding:9px 11px;font-size:11px;white-space:nowrap;cursor:pointer}
-    .nav{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:#0d1825;border-radius:26px;padding:8px;margin-top:3px}.nav-item{border:0;background:transparent;color:#a9b2bd;padding:9px 2px;border-radius:19px;font-size:10px;cursor:pointer}.nav-item b{display:block;font-size:20px;margin-bottom:4px}.nav-item.active{background:#17262c;color:var(--lime)}
-    .toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#f7fbff;color:#07101b;padding:10px 15px;border-radius:999px;font-size:12px;font-weight:650;opacity:0;pointer-events:none;transition:.25s;box-shadow:0 8px 30px rgba(0,0,0,.35)}.toast.show{opacity:1;transform:translate(-50%,0)}
-    @media(min-width:600px){body{padding:20px 0}.phone{border-radius:38px;background:#07101b;box-shadow:0 20px 70px rgba(0,0,0,.35)}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07101b">
+<title>Мій день</title>
+<style>
+:root{--bg:#07101b;--ink:#07111d;--white:#f8fbff;--lime:#c8ff22;--pink:#f4b8d5;--blue:#328ce8;--mint:#a8e9d1;--muted:#aab4c0}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}.phone{width:min(100%,430px);min-height:100vh;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 18px calc(24px + env(safe-area-inset-bottom));overflow:hidden}.top{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 16px}.time{font-weight:700}.icons{display:flex;gap:10px;font-size:17px}.hero{background:var(--lime);color:var(--ink);border-radius:30px;padding:22px 20px;margin-bottom:14px;position:relative}.hero h1{font-size:28px;margin:0 0 7px;letter-spacing:-.8px}.hero p{margin:0;font-size:14px}.bell{position:absolute;right:62px;top:21px;font-size:22px}.avatar{position:absolute;right:17px;top:14px;width:44px;height:44px;border-radius:50%;background:#091523;color:#fff;display:grid;place-items:center}.tabs{display:grid;grid-template-columns:repeat(3,1fr);background:#17212d;padding:4px;border-radius:18px;margin-bottom:13px;gap:3px}.tab{border:0;background:transparent;color:#aab4c0;padding:12px 5px;border-radius:15px;font-weight:600;cursor:pointer}.tab.active{background:var(--lime);color:var(--ink)}.period{display:flex;align-items:center;justify-content:space-between;padding:5px 4px 14px;color:#c7ced7}.arrow{border:0;background:#17212d;color:#fff;width:38px;height:38px;border-radius:50%;font-size:22px;cursor:pointer}.period-center{text-align:center}.period-title{font-weight:650;font-size:15px}.period-sub{font-size:11px;color:#84909d;margin-top:3px}.stats-card{position:relative;border-radius:29px;padding:20px;margin-bottom:14px;min-height:184px;color:#fff;overflow:visible}.stats-card.blue{background:var(--blue)}.stats-card.pink{background:var(--pink);color:var(--ink)}.stats-card.mint{background:var(--mint);color:var(--ink)}.stats-card h2{margin:0 0 5px;font-size:20px}.stats-card .big{font-size:46px;font-weight:780;letter-spacing:-2px}.stats-card .label{font-size:14px;font-weight:600}.bar{height:8px;border-radius:99px;background:rgba(7,17,29,.16);margin-top:16px;overflow:hidden}.bar i{display:block;height:100%;background:currentColor;border-radius:99px;width:0}.ring{position:absolute;right:20px;top:28px;width:92px;height:92px;border-radius:50%;background:conic-gradient(currentColor var(--p),rgba(7,17,29,.25) 0);display:grid;place-items:center}.ring:after{content:"";width:68px;height:68px;border-radius:50%;background:#07101b}.ring span{position:absolute;font-size:18px;font-weight:750}.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mini{border-radius:25px;padding:17px;background:#111d2a;min-height:130px}.mini:nth-child(1){background:var(--lime);color:var(--ink)}.mini:nth-child(2){background:var(--pink);color:var(--ink)}.mini:nth-child(3){background:var(--blue)}.mini:nth-child(4){background:var(--mint);color:var(--ink)}.mini h3{font-size:14px;margin:0 0 10px}.mini strong{font-size:27px}.mini small{display:block;margin-top:5px;opacity:.72}.tasks-title{font-size:16px;font-weight:700;margin:20px 2px 10px}.task{position:relative;border-radius:28px;padding:17px 15px;margin-bottom:14px;display:flex;align-items:center;gap:13px;min-height:102px;color:var(--ink);cursor:pointer}.task.lime{background:var(--lime)}.task.pink{background:var(--pink)}.task-icon{width:56px;height:56px;border-radius:17px;background:rgba(7,17,29,.08);display:grid;place-items:center;font-size:27px;flex:none}.task-info{flex:1}.task-title{font-size:19px;font-weight:750;margin-bottom:5px}.task-sub{font-size:12px}.check{width:43px;height:43px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center;font-size:21px}.task.done .check{background:var(--ink);color:var(--lime)}.puzzle-bottom:after,.puzzle-top:before{content:"";position:absolute;background:inherit;width:32px;height:18px;left:calc(50% - 16px);z-index:2}.puzzle-bottom:after{bottom:-12px;border-radius:0 0 9px 9px}.puzzle-top:before{top:-12px;border-radius:9px 9px 0 0}.backdate{background:#0d1825;border:1px solid #243447;border-radius:26px;padding:16px;display:flex;align-items:center;gap:12px;margin:2px 0 14px}.back-icon{width:46px;height:46px;border-radius:15px;background:#132337;display:grid;place-items:center;color:#46a9ff;font-size:22px}.backdate div:nth-child(2){flex:1}.backdate h3{margin:0 0 4px;font-size:14px}.backdate p{margin:0;color:#9ba7b5;font-size:11px}.nav{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;background:#0d1825;border-radius:25px;padding:7px}.nav button{border:0;background:transparent;color:#9ea9b6;border-radius:18px;padding:9px 2px;font-size:10px}.nav b{display:block;font-size:20px;margin-bottom:3px}.nav .active{color:var(--lime);background:#17262c}.toast{position:fixed;left:50%;bottom:25px;transform:translate(-50%,20px);background:#f8fbff;color:#07101b;padding:10px 16px;border-radius:99px;font-size:12px;font-weight:700;opacity:0;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
 </head>
 <body>
 <main class="phone">
-  <div class="top"><span class="time">9:41</span><div class="icons"><span>⌁</span><span>⌁</span><span>▰</span></div></div>
+<div class="top"><span class="time">9:41</span><div class="icons">⌁　⌁　▰</div></div>
+<section class="hero"><div class="bell">♧</div><div class="avatar">✦</div><h1>Привіт! 👋</h1><p>Сьогодні твій день для турботи про себе</p></section>
 
-  <section class="hero">
-    <div class="bell">♧</div><div class="avatar">✦</div>
-    <h1>Привіт! 👋</h1>
-    <p>Сьогодні твій день для турботи про себе</p>
-  </section>
+<div class="tabs" role="tablist"><button class="tab active" data-view="day" onclick="setView('day')">За день</button><button class="tab" data-view="week" onclick="setView('week')">За тиждень</button><button class="tab" data-view="month" onclick="setView('month')">За місяць</button></div>
 
-  <section class="stats">
-    <article class="card pink puzzle-bottom puzzle-right">
-      <div class="calendar-dot">▣</div><h2>Цей тиждень</h2><div class="big" id="weekCount">0 / 14</div><div class="label">виконано справ</div><div class="bar"><i id="weekBar" style="width:0%"></i></div>
-    </article>
-    <article class="card mint puzzle-bottom">
-      <div class="calendar-dot">▣</div><h2>Цей місяць</h2><div class="big" id="monthCount">0 / 62</div><div class="label">виконано справ</div><div class="bar"><i id="monthBar" style="width:0%"></i></div>
-    </article>
-  </section>
+<div class="period"><button class="arrow" onclick="movePeriod(-1)">‹</button><div class="period-center"><div class="period-title" id="periodTitle"></div><div class="period-sub" id="periodSub"></div></div><button class="arrow" onclick="movePeriod(1)">›</button></div>
 
-  <section class="today puzzle-bottom" id="todayCard">
-    <div class="today-title">Сьогодні</div><div class="today-count" id="todayCount">0 / 2</div><div class="today-label">виконано справ</div>
-    <div class="ring" id="ring" style="--p:0deg"><span id="percent">0%</span></div>
-    <div class="selected-date"><div><small>Обрана дата</small><strong id="dateLabel"></strong></div><button class="date-btn" onclick="toggleDatePicker()">Змінити дату</button></div>
-    <div class="date-picker" id="datePicker"><input id="dateInput" type="date" onchange="changeDate(this.value)"></div>
-  </section>
+<section class="stats-card blue" id="mainStats"><h2 id="statsTitle">Сьогодні</h2><div class="big" id="mainCount">0 / 2</div><div class="label">виконано справ</div><div class="ring" id="ring"><span id="percent">0%</span></div><div class="bar"><i id="mainBar"></i></div></section>
 
-  <section class="task lime puzzle-bottom" id="task-workout" onclick="toggleTask('workout')">
-    <div class="task-icon">🧘</div><div class="task-info"><div class="task-title">Зарядка</div><span class="pill">Щодня</span><div class="task-sub">30 хвилин для себе</div></div><div class="check">✓</div>
-  </section>
-  <section class="task pink puzzle-bottom puzzle-top" id="task-guasha" onclick="toggleTask('guasha')">
-    <div class="task-icon">♡</div><div class="task-info"><div class="task-title">Масаж гуаша</div><span class="pill">Щодня</span><div class="task-sub">10 хвилин турботи про себе</div></div><div class="check">✓</div>
-  </section>
+<div class="mini-grid"><article class="mini"><h3>Зарядка</h3><strong id="workoutStat">0</strong><small>разів виконано</small></article><article class="mini"><h3>Масаж гуаша</h3><strong id="guashaStat">0</strong><small>разів виконано</small></article><article class="mini"><h3>Виконання</h3><strong id="completionStat">0%</strong><small>від усіх справ</small></article><article class="mini"><h3>Днів із прогресом</h3><strong id="activeDays">0</strong><small>у вибраному періоді</small></article></div>
 
-  <section class="backdate">
-    <div class="back-icon">◫</div><div><h3>Не встигла відмітити?</h3><p>Відміть виконану справу за інший день</p></div><button class="back-btn" onclick="toggleDatePicker()">Заднім числом ›</button>
-  </section>
+<div class="tasks-title">Справи на обрану дату</div>
+<section class="task lime puzzle-bottom" id="task-workout" onclick="toggleTask('workout')"><div class="task-icon">🧘</div><div class="task-info"><div class="task-title">Зарядка</div><div class="task-sub">Щодня · 30 хвилин для себе</div></div><div class="check">✓</div></section>
+<section class="task pink puzzle-top" id="task-guasha" onclick="toggleTask('guasha')"><div class="task-icon">♡</div><div class="task-info"><div class="task-title">Масаж гуаша</div><div class="task-sub">Щодня · 10 хвилин турботи про себе</div></div><div class="check">✓</div></section>
 
-  <nav class="nav">
-    <button class="nav-item active"><b>⌂</b>Сьогодні</button><button class="nav-item"><b>▥</b>Статистика</button><button class="nav-item"><b>▣</b>Календар</button><button class="nav-item"><b>⚙</b>Налаштування</button>
-  </nav>
-</main>
-<div class="toast" id="toast"></div>
+<section class="backdate"><div class="back-icon">◫</div><div><h3>Не встигла відмітити?</h3><p>Переміщуйся стрілками між датами або обери інший період вище.</p></div></section>
+<nav class="nav"><button class="active"><b>⌂</b>Сьогодні</button><button><b>▥</b>Статистика</button><button><b>▣</b>Календар</button><button><b>⚙</b>Налаштування</button></nav>
+</main><div class="toast" id="toast"></div>
 <script>
-  const TASKS=['workout','guasha'];
-  const todayKey=()=>new Date().toISOString().slice(0,10);
-  let selectedDate=todayKey();
-  let data=JSON.parse(localStorage.getItem('habitData')||'{}');
-  function dayData(key){if(!data[key])data[key]={}; return data[key]}
-  function isDone(date,task){return !!dayData(date)[task]}
-  function setDone(date,task,value){dayData(date)[task]=value;localStorage.setItem('habitData',JSON.stringify(data))}
-  function formatDate(s){const d=new Date(s+'T12:00:00');return new Intl.DateTimeFormat('uk-UA',{day:'numeric',month:'long',weekday:'long'}).format(d)}
-  function daysBetween(start,end){let a=new Date(start+'T12:00:00'),b=new Date(end+'T12:00:00'),arr=[];for(let d=new Date(a);d<=b;d.setDate(d.getDate()+1))arr.push(d.toISOString().slice(0,10));return arr}
-  function update(){
-    document.getElementById('dateLabel').textContent=formatDate(selectedDate);
-    document.getElementById('dateInput').value=selectedDate;
-    let done=TASKS.filter(t=>isDone(selectedDate,t)).length;
-    document.getElementById('todayCount').textContent=done+' / 2';
-    let pct=Math.round(done/2*100);document.getElementById('percent').textContent=pct+'%';document.getElementById('ring').style.setProperty('--p',(pct*3.6)+'deg');
-    TASKS.forEach(t=>document.getElementById('task-'+t).classList.toggle('done',isDone(selectedDate,t)));
-    const now=new Date(selectedDate+'T12:00:00');const day=now.getDay();const monday=new Date(now);monday.setDate(now.getDate()-(day===0?6:day-1));const weekStart=monday.toISOString().slice(0,10);const weekDates=daysBetween(weekStart,selectedDate);
-    const weekDone=weekDates.reduce((n,d)=>n+TASKS.filter(t=>isDone(d,t)).length,0);document.getElementById('weekCount').textContent=weekDone+' / '+(weekDates.length*2);document.getElementById('weekBar').style.width=Math.round(weekDone/(weekDates.length*2)*100)+'%';
-    const monthStart=selectedDate.slice(0,7)+'-01';const monthDates=daysBetween(monthStart,selectedDate);const monthDone=monthDates.reduce((n,d)=>n+TASKS.filter(t=>isDone(d,t)).length,0);document.getElementById('monthCount').textContent=monthDone+' / '+(monthDates.length*2);document.getElementById('monthBar').style.width=Math.round(monthDone/(monthDates.length*2)*100)+'%';
-  }
-  function toggleTask(task){setDone(selectedDate,task,!isDone(selectedDate,task));update();showToast(isDone(selectedDate,task)?'Справу відмічено ✓':'Відмітку скасовано')}
-  function toggleDatePicker(){document.getElementById('datePicker').classList.toggle('show')}
-  function changeDate(value){if(!value)return;selectedDate=value;document.getElementById('datePicker').classList.remove('show');update();showToast(selectedDate===todayKey()?'Сьогодні':'Обрана дата: '+formatDate(selectedDate))}
-  function showToast(text){const el=document.getElementById('toast');el.textContent=text;el.classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>el.classList.remove('show'),1800)}
-  update();
+const TASKS=['workout','guasha'];let view='day';let anchor=new Date();let data=JSON.parse(localStorage.getItem('habitData')||'{}');
+function key(d){return d.toISOString().slice(0,10)}function clone(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate())}function dayData(k){if(!data[k])data[k]={};return data[k]}function done(k,t){return !!dayData(k)[t]}function save(k,t,v){dayData(k)[t]=v;localStorage.setItem('habitData',JSON.stringify(data))}
+function datesFor(){let a=clone(anchor),b=clone(anchor);if(view==='week'){let n=a.getDay()||7;a.setDate(a.getDate()-n+1);b=new Date(a);b.setDate(a.getDate()+6)}if(view==='month'){a=new Date(a.getFullYear(),a.getMonth(),1);b=new Date(a.getFullYear(),a.getMonth()+1,0)}let arr=[];for(let d=clone(a);d<=b;d.setDate(d.getDate()+1))arr.push(key(d));return arr}
+function fmt(k,opt={day:'numeric',month:'long',weekday:'long'}){return new Intl.DateTimeFormat('uk-UA',opt).format(new Date(k+'T12:00:00'))}
+function render(){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===view));let ds=datesFor();let first=ds[0],last=ds[ds.length-1];if(view==='day'){document.getElementById('periodTitle').textContent=fmt(first);document.getElementById('periodSub').textContent='один день'}else if(view==='week'){document.getElementById('periodTitle').textContent=fmt(first,{day:'numeric',month:'short'})+' — '+fmt(last,{day:'numeric',month:'short',year:'numeric'});document.getElementById('periodSub').textContent='понеділок — неділя'}else{document.getElementById('periodTitle').textContent=new Intl.DateTimeFormat('uk-UA',{month:'long',year:'numeric'}).format(new Date(first+'T12:00:00'));document.getElementById('periodSub').textContent='весь місяць'}
+let total=ds.length*2,allDone=0,w=0,g=0,active=0;ds.forEach(k=>{let d=TASKS.filter(t=>done(k,t)).length;allDone+=d;w+=done(k,'workout')?1:0;g+=done(k,'guasha')?1:0;if(d)active++});let pct=total?Math.round(allDone/total*100):0;document.getElementById('mainCount').textContent=allDone+' / '+total;document.getElementById('completionStat').textContent=pct+'%';document.getElementById('workoutStat').textContent=w;document.getElementById('guashaStat').textContent=g;document.getElementById('activeDays').textContent=active;document.getElementById('mainBar').style.width=pct+'%';document.getElementById('percent').textContent=pct+'%';document.getElementById('ring').style.setProperty('--p',pct*3.6+'deg');document.getElementById('statsTitle').textContent=view==='day'?'Сьогодні':view==='week'?'Цей тиждень':'Цей місяць';
+let selected=key(anchor);TASKS.forEach(t=>document.getElementById('task-'+t).classList.toggle('done',done(selected,t)));}
+function setView(v){view=v;render()}function movePeriod(dir){if(view==='day')anchor.setDate(anchor.getDate()+dir);else if(view==='week')anchor.setDate(anchor.getDate()+dir*7);else anchor.setMonth(anchor.getMonth()+dir);render()}function toggleTask(t){let k=key(anchor);save(k,t,!done(k,t));render();toast(done(k,t)?'Справу відмічено ✓':'Відмітку скасовано')}
+function toast(s){let e=document.getElementById('toast');e.textContent=s;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1400)}render();
 </script>
 </body>
 </html>
